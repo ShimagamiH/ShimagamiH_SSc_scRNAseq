@@ -14,6 +14,8 @@ library(scater)
 library(scran)
 library(ggraph)
 
+#"s.int", "Mo", "CD4", and "CD8" are seurat objects created by integration analysis of CITE-seq data of PBMCs derived from 21 SSc patients and six healthy donors. Please refer to the script "CITEseq_PBMCs_clustering.R".
+
 #Differential abundance analysis of PBMCs, between SSc patients with scleroderma renal crisis (SRC) and those without SRC.
 s.int[["seurat_clusters"]] <- Idents(s.int)
 s.int$SRC <- as.character(s.int$SRC)
