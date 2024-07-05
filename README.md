@@ -13,5 +13,4 @@ Shimagami H, et al, "Single-cell analysis reveals immune cell abnormalities unde
 ・Monocle3 (v1.3.1)
 
 ## Data availability
-Expression matrix files are available at the Japanese Genotype-phenotype Archive (JGA) with accession codes [JGA000XXX]
-(https://ddbj.nig.ac.jp/resource/jga-study/JGAS000XXX)
+Expression matrix files will be available at the Japanese Genotype-phenotype Archive.
