@@ -8,6 +8,8 @@ library(monocle3)
 library(ggplot2)
 library(patchwork)
 
+#"Mo" is a seurat object created by integration analysis of Abseq data derived from a SSc patient at the onset of SRC. Please refer to the script "Abseq_Kidney_Blood_cells_clustering.R".
+
 DefaultAssay(Mo) <- "SCT"
 pbmc.combined.cds <- as.cell_data_set(Mo)
 pbmc.combined.cds <- estimate_size_factors(pbmc.combined.cds)
