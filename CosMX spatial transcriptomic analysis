@@ -1,0 +1,233 @@
+library(Seurat)
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(Polychrome)
+library(patchwork)
+library(BiocManager)
+library(sctransform)
+library(tidyverse)
+library(hdf5r)
+library(glmGamPoi)
+library(SeuratDisk)
+library(scran)
+library(future) 
+library(data.table)
+library(tidyr)
+library(gplots)
+library(dbscan)
+library(scclusteval)
+library(ComplexHeatmap)
+
+expr_data <- read.csv("SSc1_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s1 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("SSc1_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s1), rownames(metadata)), ]
+s1 <- AddMetaData(s1, metadata = matching_metadata)
+metadata <- s1@meta.data
+
+expr_data <- read.csv("SSc2_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s2 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("SSc2_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s2), rownames(metadata)), ]
+s2 <- AddMetaData(s2, metadata = matching_metadata)
+metadata <- s2@meta.data
+
+expr_data <- read.csv("SSc3_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s3 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("SSc3_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s3), rownames(metadata)), ]
+s3 <- AddMetaData(s3, metadata = matching_metadata)
+metadata <- s3@meta.data
+
+expr_data <- read.csv("HD1_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s4 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("HD1_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s4), rownames(metadata)), ]
+s4 <- AddMetaData(s4, metadata = matching_metadata)
+metadata <- s4@meta.data
+
+expr_data <- read.csv("HD2_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s5 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("HD2_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s5), rownames(metadata)), ]
+s5 <- AddMetaData(s5, metadata = matching_metadata)
+metadata <- s5@meta.data
+
+expr_data <- read.csv("HD3_exprMat_data.csv", header = TRUE)
+rownames(expr_data) <- expr_data[, 1]
+expr_matrix <- expr_data[, 4:1003]
+s6 <- CreateSeuratObject(counts = t(expr_matrix), assay = "RNA")
+metadata <- read.csv("HD3_metadata_data.csv", row.names = 1)
+matching_metadata <- metadata[match(Cells(s6), rownames(metadata)), ]
+s6 <- AddMetaData(s6, metadata = matching_metadata)
+metadata <- s6@meta.data
+
+s1@meta.data$sample <- "SSc1"
+s2@meta.data$sample <- "SSc2"
+s3@meta.data$sample <- "SSc3"
+s4@meta.data$sample <- "HD1"
+s5@meta.data$sample <- "HD2"
+s6@meta.data$sample <- "HD3"
+
+s1@meta.data$disease <- "SRC"
+s2@meta.data$disease <- "SRC"
+s3@meta.data$disease <- "SRC"
+s4@meta.data$disease <- "HD"
+s5@meta.data$disease <- "HD"
+s6@meta.data$disease <- "HD"
+
+s1@meta.data$number <- 1
+s2@meta.data$number <- 2
+s3@meta.data$number <- 3
+s4@meta.data$number <- 4
+s5@meta.data$number <- 5
+s6@meta.data$number <- 6
+
+#To ensure that cells from different samples were not recognized as neighbors in the cell proximity analysis, number*1000 (a sufficiently large number) was added to the x and y coordinates of each cell.
+s1@meta.data$x_slide_mm <- s1@meta.data$x_slide_mm + (s1@meta.data$number * 1000)
+s1@meta.data$y_slide_mm <- s1@meta.data$y_slide_mm + (s1@meta.data$number * 1000)
+s2@meta.data$x_slide_mm <- s2@meta.data$x_slide_mm + (s2@meta.data$number * 1000)
+s2@meta.data$y_slide_mm <- s2@meta.data$y_slide_mm + (s2@meta.data$number * 1000)
+s3@meta.data$x_slide_mm <- s3@meta.data$x_slide_mm + (s3@meta.data$number * 1000)
+s3@meta.data$y_slide_mm <- s3@meta.data$y_slide_mm + (s3@meta.data$number * 1000)
+s4@meta.data$x_slide_mm <- s4@meta.data$x_slide_mm + (s4@meta.data$number * 1000)
+s4@meta.data$y_slide_mm <- s4@meta.data$y_slide_mm + (s4@meta.data$number * 1000)
+s5@meta.data$x_slide_mm <- s5@meta.data$x_slide_mm + (s5@meta.data$number * 1000)
+s5@meta.data$y_slide_mm <- s5@meta.data$y_slide_mm + (s5@meta.data$number * 1000)
+s6@meta.data$x_slide_mm <- s6@meta.data$x_slide_mm + (s6@meta.data$number * 1000)
+s6@meta.data$y_slide_mm <- s6@meta.data$y_slide_mm + (s6@meta.data$number * 1000)
+
+#Quality control
+s1 <- subset(s1, subset = qcCellsFlagged == FALSE)
+s2 <- subset(s2, subset = qcCellsFlagged == FALSE)
+s3 <- subset(s3, subset = qcCellsFlagged == FALSE)
+s4 <- subset(s4, subset = qcCellsFlagged == FALSE)
+s5 <- subset(s5, subset = qcCellsFlagged == FALSE)
+s6 <- subset(s6, subset = qcCellsFlagged == FALSE)
+
+#Data normalization based on the area of each cell
+median_value <- median(s1@meta.data$Area.um2, na.rm = TRUE)
+s1$Area.um2_factor <- s1@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s1, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s1$Area.um2_factor
+s1 <- SetAssayData(object = s1, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+median_value <- median(s2@meta.data$Area.um2, na.rm = TRUE)
+s2$Area.um2_factor <- s2@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s2, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s2$Area.um2_factor
+s2 <- SetAssayData(object = s2, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+median_value <- median(s3@meta.data$Area.um2, na.rm = TRUE)
+s3$Area.um2_factor <- s3@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s3, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s3$Area.um2_factor
+s3 <- SetAssayData(object = s3, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+median_value <- median(s4@meta.data$Area.um2, na.rm = TRUE)
+s4$Area.um2_factor <- s4@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s4, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s4$Area.um2_factor
+s4 <- SetAssayData(object = s4, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+median_value <- median(s5@meta.data$Area.um2, na.rm = TRUE)
+s5$Area.um2_factor <- s5@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s5, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s5$Area.um2_factor
+s5 <- SetAssayData(object = s5, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+median_value <- median(s6@meta.data$Area.um2, na.rm = TRUE)
+s6$Area.um2_factor <- s6@meta.data$Area.um2 / median_value
+counts_matrix <- GetAssayData(s6, assay = "RNA", layer = "counts")
+new_counts_matrix <- counts_matrix / s6$Area.um2_factor
+s6 <- SetAssayData(object = s6, assay = "RNA", layer = "counts", new.data = new_counts_matrix)
+
+#Data integration
+s.int_layer <- merge(s1, y = c(s2, s3, s4, s5, s6))
+s.int_layer <- NormalizeData(s.int_layer)
+all.genes <- rownames(s.int_layer)
+s.int_layer <- ScaleData(s.int_layer, features= all.genes)
+s.int_layer <- RunPCA(s.int_layer, npcs = 30, features= all.genes)
+options(future.globals.maxSize = 15 * 1024^3)  # 15GB
+gc()
+s.int_layer <- IntegrateLayers(
+  object = s.int_layer, method = CCAIntegration,
+  orig.reduction = "pca",features= all.genes, new.reduction = "integrated.CCA",
+  verbose = FALSE
+)
+s.int_layer <- FindNeighbors(s.int_layer, reduction = "integrated.CCA", dims = 1:30)
+s.int_layer <- FindClusters(s.int_layer, resolution = 0.9)
+s.int_layer <- RunUMAP(s.int_layer, reduction = "integrated.CCA", dims = 1:30, reduction.name = "umap.CCA")
+
+#Subset analysis of myeloid cells
+Mo<-subset(s.int_layer, ident=c("8"))
+Mo <- ScaleData(Mo, features= all.genes)
+Mo <- RunPCA(Mo, npcs = 30, features= all.genes)
+Mo <- RunUMAP(Mo, reduction = "pca", dims = 1:30)
+Mo <- FindNeighbors(Mo, reduction = "pca", dims = 1:30)
+Mo <- FindClusters(Mo, resolution = 0.2)
+
+#Cell proximity analysis
+#Annotation information for each cell is stored as "seurat_clusters2" metadata.
+s.int_layer2 <- subset(s.int_layer, subset = disease == "SRC")
+mat <- s.int_layer2@meta.data[,88:89] #x and y coordinates
+mat <- as.matrix(mat)
+eps <- 0.03
+nn <- frNN(x=mat, eps=eps)
+nn$id %>% head(n=3)
+nn_df <- nn$id %>% stack()
+cluster_ids <- s.int_layer2$seurat_clusters2 %>% unname()
+nn_df$cluster_id<- cluster_ids[nn_df$values]
+nn_df$cluster_id<- factor(nn_df$cluster_id)
+nn_df <- as.data.frame(nn_df)
+nn_df$cluster_id <- unlist(nn_df$cluster_id)
+nn_df$ind <- unlist(nn_df$ind)
+nn_df$values <- unlist(nn_df$values)
+nn_df$cluster_id <- as.vector(unlist(nn_df$cluster_id))
+nn_df$ind <- as.vector(unlist(nn_df$ind))
+nn_df <- as.data.frame(nn_df)
+nn_count <- nn_df %>%
+  group_by(ind, cluster_id) %>%
+  summarize(n = n(), .groups = "drop")
+nn_count<- nn_count %>%
+  tidyr::pivot_wider(names_from = cluster_id, values_from = n)
+nn_mat<- nn_count[,-1] %>% as.matrix()
+rownames(nn_mat)<- nn_count$ind
+nn_mat[is.na(nn_mat)] <- 0
+k_means_res<- kmeans(nn_mat, centers = 9)
+k_means_id<- k_means_res$cluster %>%
+  tibble::enframe(name = "cell_id", value = "kmeans_cluster")
+head(k_means_id)
+k_means_df<- as.data.frame(k_means_id)
+rownames(k_means_df)<- k_means_id$cell_id
+nn_obj<- CreateSeuratObject(counts = t(nn_mat),  min.features = 5)
+nn_obj<- SCTransform(nn_obj, vst.flavor = "v2")
+nn_obj <- RunPCA(nn_obj, npcs = 10, features = rownames(nn_obj))
+nn_obj <- FindNeighbors(nn_obj, reduction = "pca", dims = 1:10)
+nn_obj <- RunUMAP(nn_obj, dims = 1:10)
+nn_obj <- FindClusters(nn_obj, resolution = 0.6)
+nn_obj<- AddMetaData(nn_obj, metadata = k_means_df)
+nn_obj@meta.data %>%
+  head()
+nn_meta<- nn_obj@meta.data %>%
+  select(cell_id, SCT_snn_res.0.6, kmeans_cluster)
+s.int_layer3 <- AddMetaData(s.int_layer2, nn_meta)
+cell_fun = function(j, i, x, y, width, height, fill) {
+  grid::grid.rect(x = x, y = y, width = width *0.99, 
+                  height = height *0.99,
+                  gp = grid::gpar(col = "grey", 
+                                  fill = fill, lty = 1, lwd = 0.5))
+}
+col_fun=circlize::colorRamp2(c(-1.8, 0, 1.8), c("blue", "white", "red"))
+mat2<- table(s.int_layer3$SCT_snn_res.0.6, s.int_layer3$seurat_clusters2)
+Heatmap(scale(t(scale(as.matrix(mat2)))),
+        show_row_dend = FALSE,
+        show_column_dend = FALSE,
+        rect_gp = grid::gpar(type = "none"),col = col_fun,
+        cell_fun = cell_fun)
