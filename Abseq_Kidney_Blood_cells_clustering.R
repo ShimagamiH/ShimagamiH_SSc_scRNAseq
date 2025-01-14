@@ -111,8 +111,6 @@ samples_adt <- lapply(X=samples_adt, FUN=function(x){
 gc()
 
 adt.anchors <- FindIntegrationAnchors(object.list = samples_adt,reduction="rpca",k.anchor = 15)
-adt.anchors <- FindIntegrationAnchors(object.list = samples_adt, reference = c(1,2), normalization.method='LogNormalize', anchor.features = features_ADT, reduction="rpca", k.anchor=15)
-adt.anchors <- FindIntegrationAnchors(object.list = samples_adt,reduction="cca")
 s.int <- IntegrateData(anchorset = adt.anchors)
 gc()
 
@@ -121,8 +119,6 @@ samples_rna <- PrepSCTIntegration(object.list = samples_rna, anchor.features = f
 samples_rna <- lapply(X=samples_rna, FUN = RunPCA, features=features_RNA)
 rna.anchors <- FindIntegrationAnchors(object.list = samples_rna, normalization.method='SCT', anchor.features = features_RNA, reduction="rpca", k.anchor=15)
 gc()
-#rna.anchors <- FindIntegrationAnchors(object.list = samples_rna,reduction="rpca", normalization.method = "SCT", anchor.features = features_RNA, k.anchor = 10)
-#rna.anchors <- FindIntegrationAnchors(object.list = samples_rna,reduction="cca", normalization.method = "SCT", anchor.features = features_RNA)
 int.rna <- IntegrateData(anchorset = rna.anchors, normalization.method="SCT")
 gc()
 
@@ -133,7 +129,6 @@ s.int[["percent.mt"]] <- int.rna[["percent.mt"]]
 s.int[["SCT"]] <- int.rna[["integrated"]]
 s.int[["nFeature_SCT"]] <- int.rna[["nFeature_SCT"]]
 s.int[["nCount_SCT"]] <- int.rna[["nCount_SCT"]]
-s.int[["ADT"]] <- NULL
 
 DefaultAssay(s.int) <- 'SCT'
 s.int <- RunPCA(s.int, verbose=TRUE)
