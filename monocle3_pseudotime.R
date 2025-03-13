@@ -18,7 +18,7 @@ pbmc.combined.cds <- cluster_cells(cds = pbmc.combined.cds, reduction_method = "
 pbmc.combined.cds@clusters@listData[["UMAP"]][["clusters"]]
 pbmc.combined.cds <- learn_graph(pbmc.combined.cds, use_partition = TRUE)
 plot_cells(pbmc.combined.cds, cell_size = 1)
-# set root node.
+#In "order_cells" function, the root node was set to immature monocytes characterized by high expression of S100A12 and low expression of HLA-DRB1.
 pbmc.combined.cds <- order_cells(pbmc.combined.cds)
 # result
 plot_cells(pbmc.combined.cds,
