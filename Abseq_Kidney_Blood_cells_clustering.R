@@ -34,7 +34,7 @@ load_and_prep_RNA <- function(x){
                     percent.mt < 20 & 
                     nFeature_RNA < 5000 & 
                     nFeature_RNA > 200)
-  x.rna<-SCTransform(x.rna, method="glmGamPoi",return.only.var.genes = FALSE,variable.features.n = 23000,)
+  x.rna<-SCTransform(x.rna, method="glmGamPoi",return.only.var.genes = FALSE,variable.features.n = 23000, seed.use=1448145)
   return(x.rna)}
 samples_rna <- apply(sample_info, 1, load_and_prep_RNA)
 
@@ -73,7 +73,7 @@ load_and_prep_RNA2 <- function(x){
                     percent.mt < 40 & 
                     nFeature_RNA < 5000 & 
                     nFeature_RNA > 200)
-  x.rna<-SCTransform(x.rna, method="glmGamPoi",return.only.var.genes = FALSE,variable.features.n = 23000,)
+  x.rna<-SCTransform(x.rna, method="glmGamPoi",return.only.var.genes = FALSE,variable.features.n = 23000, seed.use=1448145)
   return(x.rna)}
 samples_rna2 <- apply(sample_info2, 1, load_and_prep_RNA2)
 
@@ -133,7 +133,7 @@ s.int[["nCount_SCT"]] <- int.rna[["nCount_SCT"]]
 DefaultAssay(s.int) <- 'SCT'
 s.int <- RunPCA(s.int, verbose=TRUE)
 s.int <- FindNeighbors(s.int, reductiobn="pca")
-s.int <- RunUMAP(s.int, reductiobn="pca", dims=1:30)
+s.int <- RunUMAP(s.int, reductiobn="pca", dims=1:30, , seed.use = 42)
 s.int <- FindClusters(s.int, reductiobn="pca", graph.name="SCT_snn",resolution=0.5)
 Mo <- subset(s.int, idents =c("4","5","14")) #subset monocytes, macrophages, and conventional dendritic cells from "s.int".
 #Manually remove doublets, platelets, and red blood cells from "s.int" using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
