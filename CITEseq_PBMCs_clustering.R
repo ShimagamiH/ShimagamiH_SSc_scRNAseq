@@ -43,7 +43,7 @@ load_and_prep_RNA <- function(x){
   tmprna <- AddMetaData(tmprna, metadata = x['sample'], col.name="sample")
   tmprna <- AddMetaData(tmprna, metadata = x['SRC'], col.name="SRC")
   tmprna <- AddMetaData(tmprna, metadata = x['ILD'], col.name="ILD")
-  tmprna <- SCTransform(tmprna, method="glmGamPoi", vars.to.regress = c("percent.mt"))
+  tmprna <- SCTransform(tmprna, method="glmGamPoi", vars.to.regress = c("percent.mt"), seed.use=1448145)
   return(tmprna)}
 samples_rna <- apply(sample_info, 1, load_and_prep_RNA)
 gc()
@@ -83,7 +83,7 @@ B<-subset(s.int, ident=c("B naive","B intermediate","B memory"))
 NK<-subset(s.int, ident=c("NK","NK_CD56bright"))
 pDC<-subset(s.int, ident=c("pDC"))
 
-s.int <- RunUMAP(s.int, reduction = "ref.spca", dims = 1:30)
+s.int <- RunUMAP(s.int, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 s.int <- FindNeighbors(s.int, reduction = "ref.spca", dims = 1:30)
 s.int <- FindClusters(s.int, graph.name="SCT_snn",algorithm = 3,resolution =0.5,verbose = FALSE)
 gc()
@@ -92,7 +92,7 @@ DimPlot(s.int, split.by = "disease", reduction = 'umap',label = TRUE, repel = FA
 DimPlot(s.int, split.by = "sample", reduction = 'umap',label = TRUE, repel = FALSE, label.box=TRUE, label.size = 2) 
 saveRDS(s.int, "s.int.rds")
 
-Mo <- RunUMAP(Mo, reduction = "ref.spca", dims = 1:30)
+Mo <- RunUMAP(Mo, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 Mo <- FindNeighbors(Mo, reduction = "ref.spca", dims = 1:30)
 Mo <- FindClusters(Mo, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -109,7 +109,7 @@ saveRDS(Mo, "Mo.rds")
 saveRDS(Mo_2, "Mo_2.rds")
 
 
-CD4 <- RunUMAP(CD4, reduction = "ref.spca", dims = 1:30)
+CD4 <- RunUMAP(CD4, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 CD4 <- FindNeighbors(CD4, reduction = "ref.spca", dims = 1:30)
 CD4 <- FindClusters(CD4, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -126,7 +126,7 @@ saveRDS(CD4, "CD4.rds")
 saveRDS(CD4_2, "CD4_2.rds")
 
 
-CD8 <- RunUMAP(CD8, reduction = "ref.spca", dims = 1:30)
+CD8 <- RunUMAP(CD8, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 CD8 <- FindNeighbors(CD8, reduction = "ref.spca", dims = 1:30)
 CD8 <- FindClusters(CD8, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -142,7 +142,7 @@ DimPlot(CD8_2, split.by = "ILD",reduction = 'umap', label = TRUE, repel = FALSE,
 saveRDS(CD8, "CD8.rds")
 saveRDS(CD8_2, "CD8_2.rds")
 
-B <- RunUMAP(B, reduction = "ref.spca", dims = 1:30)
+B <- RunUMAP(B, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 B <- FindNeighbors(B, reduction = "ref.spca", dims = 1:30)
 B <- FindClusters(B, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -153,10 +153,8 @@ DotPlot(B, cols= c("red","yellow","white"), col.max=2, col.min=-2, scale=TRUE, d
   scale_color_gradient2(low="blue", mid="white", high="red")
 DimPlot(B, split.by = "sample",reduction = 'umap', label = TRUE, repel = FALSE, label.size = 2) 
 saveRDS(B, "B.rds")
-saveRDS(B, "B.rds")
 
-
-NK <- RunUMAP(NK, reduction = "ref.spca", dims = 1:30)
+NK <- RunUMAP(NK, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 NK <- FindNeighbors(NK, reduction = "ref.spca", dims = 1:30)
 NK <- FindClusters(NK, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -167,9 +165,8 @@ DotPlot(NK, cols= c("red","yellow","white"), col.max=2, col.min=-2, scale=TRUE, 
   scale_color_gradient2(low="blue", mid="white", high="red")
 DimPlot(NK, split.by = "sample",reduction = 'umap', label = TRUE, repel = FALSE, label.size = 2) 
 saveRDS(NK, "NK.rds")
-saveRDS(NK, "NK.rds")
 
-pDC <- RunUMAP(pDC, reduction = "ref.spca", dims = 1:30)
+pDC <- RunUMAP(pDC, reduction = "ref.spca", dims = 1:30, seed.use = 42)
 pDC <- FindNeighbors(pDC, reduction = "ref.spca", dims = 1:30)
 pDC <- FindClusters(pDC, graph.name="SCT_snn",algorithm = 3,resolution = 0.5,verbose = FALSE)
 #Manually remove doublet and debris using gene expression data and surface antigen data. Re-cluster and annotate cell populations (Omitted).
@@ -179,5 +176,4 @@ DotPlot(pDC, cols= c("red","yellow","white"), col.max=1, col.min=-0.2, scale=TRU
         group.by="seurat_clusters") + theme(axis.text.x=element_text(size=12, angle=90)) +
   scale_color_gradient2(low="blue", mid="white", high="red")
 DimPlot(pDC, split.by = "sample",reduction = 'umap', label = TRUE, repel = FALSE, label.size = 2)
-saveRDS(pDC, "pDC.rds")
 saveRDS(pDC, "pDC.rds")
