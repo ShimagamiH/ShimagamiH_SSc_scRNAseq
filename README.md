@@ -3,8 +3,6 @@
 ## Overview
 This repository provides codes used for CITE-seq analyses of >230,000 WBCs from 21 patients with systemic sclerosis and 6 healthy donors, as well as codes used for Abseq analyses of >15000 peripheral blood or kidney cells from a patient at the onset of scleroderma renal crisis. This repository also provides codes used for CosMX spatial transcriptomic analysis of kidney tissue cells from three patients with scleroderma renal crisis and three healthy donors.
 
-Shimagami H, et al, "Single-cell analysis reveals immune cell abnormalities underlying the clinical heterogeneity of systemic sclerosis", submitted. 
-
 ## Software requirements
 For scRNA-seq data analysis
 ・R version 4.2.1
@@ -19,4 +17,4 @@ For spatial transcriptomic data analysis
 ・scclusteval (v0.0.0.9000)
 
 ## Data availability
-Count matrix data is available at GEA with accession code E-GEAD-872. Fast-q files are also available at DNA Data Bank of Japan Sequence Read Archive with accession code DRA019274.
+Count matrix data of scRNA-seq is available at GEA with accession code E-GEAD-872. Fast-q files are also available at DNA Data Bank of Japan Sequence Read Archive with accession code DRA019274.
